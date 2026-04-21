@@ -1,0 +1,44 @@
+# Fly.io app manifest for the hosted UOR Passport MCP Server.
+#
+# Hosts the pre-built GHCR image at https://mcp.uor.foundation/mcp.
+# TLS is Fly-managed (Let's Encrypt); auto-stop keeps the cost near zero
+# when idle, auto-start boots a machine on the first incoming request.
+#
+# Deploy: `fly deploy --image ghcr.io/humuhumu33/mcp-uor-server:latest`
+
+app            = "uor-passport"
+primary_region = "iad"   # Ashburn, VA. Change to "ord" (Chicago), "lhr" (London),
+                         # or "fra" (Frankfurt) to move closer to most users.
+
+[build]
+  image = "ghcr.io/humuhumu33/mcp-uor-server:latest"
+
+[env]
+  UOR_TRANSPORT        = "http"
+  PORT                 = "3000"
+  UOR_PASSPORT_ENABLED = "true"
+  UOR_MCPS_ENABLED     = "true"
+  UOR_USE_JCS          = "true"
+  UOR_MCP_HOST         = "https://mcp.uor.foundation"
+  RUST_LOG             = "info"
+
+[http_service]
+  internal_port        = 3000
+  force_https          = true
+  auto_stop_machines   = "stop"
+  auto_start_machines  = true
+  min_machines_running = 0
+  processes            = ["app"]
+
+  [[http_service.checks]]
+    interval     = "30s"
+    timeout      = "5s"
+    grace_period = "10s"
+    method       = "GET"
+    path         = "/health"
+
+[[vm]]
+  size     = "shared-cpu-1x"
+  memory   = "256mb"
+  cpu_kind = "shared"
+  cpus     = 1
