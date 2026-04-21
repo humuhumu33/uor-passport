@@ -1,0 +1,68 @@
+[package]
+name = "mcp-uor-server"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+description = "UOR Passport MCP Server — canonical reference implementation of the UOR Passport Envelope"
+license = "Apache-2.0"
+repository = "https://github.com/humuhumu33/uor-passport"
+keywords = ["mcp", "uor", "passport", "content-addressing", "modelcontextprotocol"]
+categories = ["network-programming", "cryptography"]
+
+[[bin]]
+name = "mcp-uor-server"
+path = "src/main.rs"
+
+[dependencies]
+# MCP framework (official Rust SDK)
+rmcp = { version = "1.5", features = ["server", "macros", "transport-streamable-http-server", "transport-io"] }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+
+# HTTP server for HTTP transport mode
+axum = "0.8"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+
+# JCS canonicalization — RFC 8785 (actively maintained)
+serde_json_canonicalizer = "0.2"
+
+# SHA-256 for passport fingerprint
+sha2 = "0.10"
+
+# Hex encoding
+hex = "0.4"
+
+# Timestamps (ISO 8601)
+chrono = { version = "0.4", features = ["serde"] }
+
+# Error handling
+anyhow = "1"
+
+# Structured logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+# Base64 encoding (used by mcps feature)
+base64 = "0.22"
+
+# Ed25519 signatures for uor.mcps signed receipts (optional, feature-gated)
+ed25519-dalek = { version = "2", default-features = false, features = ["std", "rand_core"], optional = true }
+rand = { version = "0.8", optional = true }
+
+[features]
+default = ["mcps"]
+mcps = ["dep:ed25519-dalek", "dep:rand"]
+
+[profile.release]
+strip = true
+lto = "thin"
+codegen-units = 1
+opt-level = 3
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full", "test-util"] }
