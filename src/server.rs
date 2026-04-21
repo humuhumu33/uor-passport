@@ -5,21 +5,14 @@ use std::collections::BTreeMap;
 use rmcp::{
     handler::server::tool::ToolCallContext,
     model::{
-        CallToolRequestParams, CallToolResult, ErrorData, Implementation,
-        ListToolsResult, PaginatedRequestParams, ServerCapabilities, ServerInfo, Tool,
-        ToolsCapability,
+        CallToolRequestParams, CallToolResult, ErrorData, Implementation, ListToolsResult,
+        PaginatedRequestParams, ServerCapabilities, ServerInfo, Tool, ToolsCapability,
     },
-    ServerHandler,
     service::RequestContext,
-    RoleServer,
+    RoleServer, ServerHandler,
 };
 
-use crate::{
-    config::Config,
-    github::GitHubClient,
-    passport,
-    tools::UorTools,
-};
+use crate::{config::Config, github::GitHubClient, passport, tools::UorTools};
 
 // Local alias matching rmcp's internal convention
 type McpError = ErrorData;
@@ -44,8 +37,7 @@ impl UorPassportServer {
 
     fn build_capabilities(&self) -> ServerCapabilities {
         // BTreeMap<String, JsonObject> is the type for experimental/extensions
-        let mut ext: BTreeMap<String, serde_json::Map<String, serde_json::Value>> =
-            BTreeMap::new();
+        let mut ext: BTreeMap<String, serde_json::Map<String, serde_json::Value>> = BTreeMap::new();
 
         if self.config.passport_enabled {
             let mut cap = serde_json::Map::new();
@@ -162,8 +154,9 @@ impl ServerHandler for UorPassportServer {
                             let fingerprint = envelope.fingerprint.clone();
                             let gh = gh.clone();
                             tokio::spawn(async move {
-                                if let Err(e) =
-                                    gh.store_passport(&fingerprint, &envelope, &content_val).await
+                                if let Err(e) = gh
+                                    .store_passport(&fingerprint, &envelope, &content_val)
+                                    .await
                                 {
                                     tracing::warn!(
                                         error = %e,

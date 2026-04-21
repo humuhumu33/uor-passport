@@ -41,7 +41,8 @@ impl GitHubClient {
     ) -> anyhow::Result<()> {
         #[cfg(feature = "github-storage")]
         {
-            self.store_passport_impl(fingerprint, envelope, content).await
+            self.store_passport_impl(fingerprint, envelope, content)
+                .await
         }
         #[cfg(not(feature = "github-storage"))]
         {

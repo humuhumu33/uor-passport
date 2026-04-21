@@ -15,13 +15,17 @@ fn test_jcs_key_ordering_is_canonical() {
     let a = serde_json::json!({"z": 1, "a": 2});
     let b = serde_json::json!({"a": 2, "z": 1});
 
-    let canon_a =
-        String::from_utf8(serde_json_canonicalizer::to_vec(&a).unwrap()).unwrap();
-    let canon_b =
-        String::from_utf8(serde_json_canonicalizer::to_vec(&b).unwrap()).unwrap();
+    let canon_a = String::from_utf8(serde_json_canonicalizer::to_vec(&a).unwrap()).unwrap();
+    let canon_b = String::from_utf8(serde_json_canonicalizer::to_vec(&b).unwrap()).unwrap();
 
-    assert_eq!(canon_a, canon_b, "different key orderings must canonicalize identically");
-    assert_eq!(canon_a, r#"{"a":2,"z":1}"#, "canonical form must have keys in Unicode order");
+    assert_eq!(
+        canon_a, canon_b,
+        "different key orderings must canonicalize identically"
+    );
+    assert_eq!(
+        canon_a, r#"{"a":2,"z":1}"#,
+        "canonical form must have keys in Unicode order"
+    );
 }
 
 #[test]
@@ -33,7 +37,10 @@ fn test_identical_content_identical_fingerprint_regardless_of_key_order() {
     let (fp1, _) = compute_fingerprint(&v1, true).unwrap();
     let (fp2, _) = compute_fingerprint(&v2, true).unwrap();
 
-    assert_eq!(fp1, fp2, "fingerprint must be key-order-independent via JCS");
+    assert_eq!(
+        fp1, fp2,
+        "fingerprint must be key-order-independent via JCS"
+    );
 }
 
 #[test]
@@ -62,7 +69,10 @@ fn test_rfc8785_unicode_escape_normalization() {
     let canon_lit =
         String::from_utf8(serde_json_canonicalizer::to_vec(&literal_a).unwrap()).unwrap();
 
-    assert_eq!(canon_esc, canon_lit, "Unicode escapes must normalize to literal characters");
+    assert_eq!(
+        canon_esc, canon_lit,
+        "Unicode escapes must normalize to literal characters"
+    );
 }
 
 #[test]
@@ -86,15 +96,25 @@ fn test_nested_objects_are_canonicalized_recursively() {
     let (fp1, _) = compute_fingerprint(&v1, true).unwrap();
     let (fp2, _) = compute_fingerprint(&v2, true).unwrap();
 
-    assert_eq!(fp1, fp2, "nested object key ordering must also be canonicalized");
+    assert_eq!(
+        fp1, fp2,
+        "nested object key ordering must also be canonicalized"
+    );
 }
 
 #[test]
 fn test_fingerprint_is_256_bit_sha256() {
     // SHA-256 produces 32 bytes = 64 hex chars
     let (fp, _) = compute_fingerprint(&serde_json::json!("test"), true).unwrap();
-    assert_eq!(fp.len(), 64, "SHA-256 fingerprint must be 64 hex characters");
-    assert!(fp.chars().all(|c| c.is_ascii_hexdigit()), "must be all hex digits");
+    assert_eq!(
+        fp.len(),
+        64,
+        "SHA-256 fingerprint must be 64 hex characters"
+    );
+    assert!(
+        fp.chars().all(|c| c.is_ascii_hexdigit()),
+        "must be all hex digits"
+    );
 }
 
 #[test]

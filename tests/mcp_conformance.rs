@@ -5,19 +5,19 @@
 mod config;
 #[path = "../src/github.rs"]
 mod github;
-#[path = "../src/passport.rs"]
-mod passport;
-#[path = "../src/tools.rs"]
-mod tools;
-#[path = "../src/server.rs"]
-mod server;
 #[path = "../src/health.rs"]
 mod health;
+#[path = "../src/passport.rs"]
+mod passport;
+#[path = "../src/server.rs"]
+mod server;
+#[path = "../src/tools.rs"]
+mod tools;
 
 use config::{Config, TransportMode};
 use passport::PassportEnvelope;
-use server::UorPassportServer;
 use rmcp::ServerHandler;
+use server::UorPassportServer;
 
 fn test_config() -> Config {
     Config {
@@ -48,7 +48,10 @@ fn test_server_info_contains_capabilities() {
 
     assert!(!info.server_info.name.is_empty());
     assert!(!info.server_info.version.is_empty());
-    assert!(info.capabilities.tools.is_some(), "tools capability must be declared");
+    assert!(
+        info.capabilities.tools.is_some(),
+        "tools capability must be declared"
+    );
 }
 
 #[test]
@@ -56,7 +59,9 @@ fn test_server_info_declares_uor_passport_extension() {
     let server = test_server();
     let info = server.get_info();
 
-    let exts = info.capabilities.extensions
+    let exts = info
+        .capabilities
+        .extensions
         .as_ref()
         .expect("extensions must be present");
     assert!(
@@ -76,8 +81,14 @@ async fn test_list_tools_returns_uor_tools() {
     let server = test_server();
     let tools = server.tools.tool_router.list_all();
     let names: Vec<&str> = tools.iter().map(|t| t.name.as_ref()).collect();
-    assert!(names.contains(&"encode_address"), "encode_address must be listed");
-    assert!(names.contains(&"verify_passport"), "verify_passport must be listed");
+    assert!(
+        names.contains(&"encode_address"),
+        "encode_address must be listed"
+    );
+    assert!(
+        names.contains(&"verify_passport"),
+        "verify_passport must be listed"
+    );
 }
 
 #[tokio::test]
@@ -95,15 +106,16 @@ async fn test_encode_address_produces_fingerprint() {
     let server = test_server();
     let _ = server; // construction verified above
 
-    let result = rmcp::model::CallToolResult::success(vec![
-        rmcp::model::Content::text("sha256:abc123"),
-    ]);
+    let result =
+        rmcp::model::CallToolResult::success(vec![rmcp::model::Content::text("sha256:abc123")]);
     let enriched = passport::attach(result, &test_config());
 
     let meta = enriched.meta.as_ref().unwrap();
-    assert!(meta.contains_key("uor.passport"), "passport must be in meta");
-    let envelope: PassportEnvelope =
-        serde_json::from_value(meta["uor.passport"].clone()).unwrap();
+    assert!(
+        meta.contains_key("uor.passport"),
+        "passport must be in meta"
+    );
+    let envelope: PassportEnvelope = serde_json::from_value(meta["uor.passport"].clone()).unwrap();
     assert_eq!(envelope.fingerprint.len(), 64);
 }
 
@@ -124,7 +136,10 @@ fn test_verify_passport_valid() {
     };
 
     let result = passport::verify(&content, &envelope, true);
-    assert!(result.valid, "passport should be valid for unmodified content");
+    assert!(
+        result.valid,
+        "passport should be valid for unmodified content"
+    );
     assert!(result.reason.is_none());
 }
 
@@ -146,7 +161,10 @@ fn test_verify_passport_tampered_content_fails() {
     let result = passport::verify(&tampered, &envelope, true);
 
     assert!(!result.valid, "tampered content must fail verification");
-    assert!(result.reason.is_some(), "reason must be provided on failure");
+    assert!(
+        result.reason.is_some(),
+        "reason must be provided on failure"
+    );
 }
 
 #[test]

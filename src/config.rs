@@ -60,10 +60,10 @@ impl Config {
             .and_then(|r| r.parse().ok())
             .unwrap_or(100);
         let use_jcs = env_bool("UOR_USE_JCS", true);
-        let github_owner = std::env::var("UOR_GITHUB_OWNER")
-            .unwrap_or_else(|_| "humuhumu33".to_string());
-        let github_repo = std::env::var("UOR_GITHUB_REPO")
-            .unwrap_or_else(|_| "uor-passport".to_string());
+        let github_owner =
+            std::env::var("UOR_GITHUB_OWNER").unwrap_or_else(|_| "humuhumu33".to_string());
+        let github_repo =
+            std::env::var("UOR_GITHUB_REPO").unwrap_or_else(|_| "uor-passport".to_string());
 
         // Validate port range
         if port == 0 {

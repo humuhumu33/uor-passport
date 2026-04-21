@@ -80,10 +80,7 @@ pub fn compute_fingerprint(
     Ok((fp, len))
 }
 
-fn canonicalize(
-    value: &serde_json::Value,
-    use_jcs: bool,
-) -> anyhow::Result<(Vec<u8>, String)> {
+fn canonicalize(value: &serde_json::Value, use_jcs: bool) -> anyhow::Result<(Vec<u8>, String)> {
     if use_jcs {
         let bytes = serde_json_canonicalizer::to_vec(value)
             .map_err(|e| anyhow::anyhow!("JCS canonicalization failed: {e}"))?;

@@ -80,7 +80,9 @@ impl UorTools {
     /// Accepts strings up to 1000 characters (the UOR Foundation string capability).
     /// Returns a content address in the format `sha256:<64-hex-chars>` along with
     /// the full passport envelope fields for verification.
-    #[tool(description = "Compute the UOR content address (SHA-256 fingerprint) for a UTF-8 string. Accepts up to 1000 characters (UOR string capability). Returns sha256:<64-hex> address and passport fields.")]
+    #[tool(
+        description = "Compute the UOR content address (SHA-256 fingerprint) for a UTF-8 string. Accepts up to 1000 characters (UOR string capability). Returns sha256:<64-hex> address and passport fields."
+    )]
     async fn encode_address(
         &self,
         Parameters(EncodeAddressRequest { content }): Parameters<EncodeAddressRequest>,
@@ -123,7 +125,9 @@ impl UorTools {
     /// Re-computes the SHA-256 fingerprint of the content and compares it to the
     /// passport's claimed fingerprint. Returns `{"valid": true}` on match or
     /// `{"valid": false, "reason": "..."}` on mismatch.
-    #[tool(description = "Verify a UOR Passport Envelope against its content. Re-computes the fingerprint and returns {valid: bool, reason?: string}.")]
+    #[tool(
+        description = "Verify a UOR Passport Envelope against its content. Re-computes the fingerprint and returns {valid: bool, reason?: string}."
+    )]
     async fn verify_passport(
         &self,
         Parameters(VerifyPassportRequest {
@@ -164,7 +168,9 @@ impl UorTools {
     ///
     /// Note: Signing support is planned for v0.2. This tool is registered as a
     /// capability placeholder and will return a not-implemented error until then.
-    #[tool(description = "Sign content with a UOR identity key (Ed25519). Note: signing is planned for v0.2 — this is a capability placeholder.")]
+    #[tool(
+        description = "Sign content with a UOR identity key (Ed25519). Note: signing is planned for v0.2 — this is a capability placeholder."
+    )]
     async fn sign(
         &self,
         Parameters(SignRequest { content, algorithm }): Parameters<SignRequest>,

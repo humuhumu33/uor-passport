@@ -46,7 +46,10 @@ async fn main() -> anyhow::Result<()> {
     };
 
     eprintln!("╔══════════════════════════════════════════════════════╗");
-    eprintln!("║         UOR Passport MCP Server v{:<20} ║", env!("CARGO_PKG_VERSION"));
+    eprintln!(
+        "║         UOR Passport MCP Server v{:<20} ║",
+        env!("CARGO_PKG_VERSION")
+    );
     eprintln!("║  Endpoint : {:<41} ║", config.mcp_host);
     eprintln!("║  Transport: {:<41} ║", transport_label);
     eprintln!("║  Passport : {:<41} ║", passport_status);
@@ -65,8 +68,16 @@ async fn main() -> anyhow::Result<()> {
     );
     tracing::info!(
         "Capabilities: uor.passport{}{} (uor.verify always on)",
-        if config.signing_enabled { ", uor.sign" } else { "" },
-        if config.github_token.is_some() { ", github-storage" } else { "" },
+        if config.signing_enabled {
+            ", uor.sign"
+        } else {
+            ""
+        },
+        if config.github_token.is_some() {
+            ", github-storage"
+        } else {
+            ""
+        },
     );
 
     match config.transport {
